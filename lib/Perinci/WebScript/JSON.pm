@@ -59,12 +59,12 @@ sub run {
     };
 
     # determine appropriate deployment
-    if ($0 =~ /\.cgi\z/) {
-        require Plack::Handler::CGI;
-        Plack::Handler::CGI->new->run($app);
-    } elsif ($0 =~ /\.fcgi\z/) {
+    if ($0 =~ /\.fcgi\z/ || $ENV{FCGI_ROLE}) {
         require Plack::Handler::FCGI;
         Plack::Handler::FCGI->new->run($app);
+    if ($0 =~ /\.cgi\z/ || $ENV{GATEWAY_INTERFACE}) {
+        require Plack::Handler::CGI;
+        Plack::Handler::CGI->new->run($app);
     } else {
         die "Can't determine what deployment to use";
     }

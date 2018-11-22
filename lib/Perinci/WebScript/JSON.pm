@@ -62,7 +62,7 @@ sub run {
     if ($0 =~ /\.fcgi\z/ || $ENV{FCGI_ROLE}) {
         require Plack::Handler::FCGI;
         Plack::Handler::FCGI->new->run($app);
-    if ($0 =~ /\.cgi\z/ || $ENV{GATEWAY_INTERFACE}) {
+    } elsif ($0 =~ /\.cgi\z/ || $ENV{GATEWAY_INTERFACE}) {
         require Plack::Handler::CGI;
         Plack::Handler::CGI->new->run($app);
     } else {

@@ -1,3 +1,6 @@
+# this is a false positive, mostly
+## no critic: ValuesAndExpressions::ProhibitCommaSeparatedStatements
+
 package Perinci::WebScript::JSON;
 
 # DATE
@@ -43,11 +46,15 @@ sub run {
         my $req = Plack::Request->new($_[0]);
         my $args = Perinci::Sub::GetArgs::WebForm::get_args_from_webform(
             $req->parameters, $meta, 1);
-        my $res = $self->riap_client->request(call => $self->url);
+        my $res = $self->riap_client->request(
+            call => $self->url,
+            {args=>$args},
+        );
+
         [
             $res->[0],
             ['Content-Type' => 'application/json; charset=UTF-8'],
-            [JSON::MaybeXS::encode_json($res->[2])],
+            [JSON::MaybeXS->new->allow_nonref(1)->encode($res->[2])],
         ],
     };
 

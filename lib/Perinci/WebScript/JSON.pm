@@ -59,7 +59,9 @@ sub run {
     };
 
     # determine appropriate deployment
-    if ($0 =~ /\.fcgi\z/ || $ENV{FCGI_ROLE}) {
+    if ($ENV{PLACK_ENV}) {
+        return $app;
+    } elsif ($0 =~ /\.fcgi\z/ || $ENV{FCGI_ROLE}) {
         require Plack::Handler::FCGI;
         Plack::Handler::FCGI->new->run($app);
     } elsif ($0 =~ /\.cgi\z/ || $ENV{GATEWAY_INTERFACE}) {
@@ -97,14 +99,27 @@ In F<My/App.pm>:
  }
  1;
 
+To run using plackup, create F<app.psgi> (or F<app.cgi>, or F<app.fcgi>):
+
+ #!/usr/bin/env perl
+ use Perinci::WebScript::JSON;
+ Perinci::WebScript::JSON->new(url => '/My/App/uppercase')->run;
+
+then C<plackup app.psgi>.
+
 To run as CGI script, create F<app.cgi>:
 
  #!/usr/bin/env perl
  use Perinci::WebScript::JSON;
  Perinci::WebScript::JSON->new(url => '/My/App/uppercase')->run;
 
+then put somewhere inside webserver's document root or cgi-bin directory.
+
 To run as FCGI script, create F<app.fcgi>:
 
  #!/usr/bin/env perl
  use Perinci::WebScript::JSON;
  Perinci::WebScript::JSON->new(url => '/My/App/uppercase')->run;
+
+then put somewhere inside webserver's document root or designated fcgi-bin
+directory.
